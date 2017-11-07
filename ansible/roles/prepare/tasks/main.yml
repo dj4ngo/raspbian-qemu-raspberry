@@ -1,0 +1,7 @@
+---
+# roles/prepare/tasks/main.yml
+- name: be sure qemu-system-arm is installed
+  package: 
+      name: qemu-system-arm
+      state: present
+

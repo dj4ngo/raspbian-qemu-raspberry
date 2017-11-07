@@ -1,0 +1,11 @@
+---
+# roles/download/tasks/main.yml
+- name: Creates directory
+  file: 
+    path: "{{ dl_path }}"
+    state: directory
+
+- name: download latest raspbian
+  get_url: 
+    url: https://downloads.raspberrypi.org/raspbian_latest
+    dest: "{{ dl_path }}/rpi.img"

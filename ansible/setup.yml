@@ -1,0 +1,9 @@
+---
+# setup.yml
+- hosts: localhost
+  vars:
+    - dl_path: "/VM_pool/raspbian-rpi-qemu"
+
+  roles:
+    - prepare
+    - download    
