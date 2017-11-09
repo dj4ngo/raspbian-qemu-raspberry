@@ -2,10 +2,25 @@
 # roles/download/tasks/main.yml
 - name: Creates directory
   file: 
-    path: "{{ dl_path }}"
+    path: "{{ item }}"
     state: directory
+  with_items:
+    - "{{ dl_path }}"
+    - "{{ exec_path }}"
 
 - name: download latest raspbian
   get_url: 
-    url: https://downloads.raspberrypi.org/raspbian_latest
+    url: http://downloads.raspberrypi.org/raspbian/images/raspbian-2017-09-08/2017-09-07-raspbian-stretch.zip
     dest: "{{ dl_path }}/"
+  register: dl_result
+
+#- fail: 
+#    msg: Error while downloading "{{ dl_result.url }}",
+#  when: 
+
+
+- name: unzip archive
+  unarchive:
+    src: "{{ dl_result.dest }}"
+    dest: "{{ exec_path }}"
+

@@ -2,7 +2,8 @@
 # setup.yml
 - hosts: localhost
   vars:
-    - dl_path: "/VM_pool/raspbian-rpi-qemu"
+    - dl_path: "/VM_pool/raspbian-rpi-qemu/dl"
+    - exec_path: "/VM_pool/raspbian-rpi-qemu" 
 
   roles:
     - prepare
