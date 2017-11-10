@@ -3,6 +3,8 @@
 dir="$(dirname $(readlink -f $0))"
 raspbian_url="http://downloads.raspberrypi.org/raspbian/images/"
 tmp_file="$(mktemp)"
+dl_path="/vM_pool/raspbian-rpi-qemu/dl"
+vm_path="/vM_pool/raspbian-rpi-qemu"
 default_debian_version="raspbian-2017-09-08"
 
 # remove file on exit
@@ -32,7 +34,7 @@ function get_raspbian_versions () {
 
 function run_playbook () {
 	playbook="$1"
-	extra_vars="$2"
+	extra_vars="dl_path=$dlpath vm_path=$vm_path $2"
 	set -x
 	sudo ansible-playbook -i "$dir/ansible/inventory" --extra-vars "$extra_vars" "$dir/ansible/${playbook}.yml" $DEBUG
 	set +x
