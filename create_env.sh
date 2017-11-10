@@ -3,6 +3,7 @@
 dir="$(dirname $(readlink -f $0))"
 raspbian_url="http://downloads.raspberrypi.org/raspbian/images/"
 tmp_file="$(mktemp)"
+default_debian_version="raspbian-2017-09-08"
 
 # remove file on exit
 trap "{ rm -f $tmp_file; }" EXIT 
@@ -39,13 +40,9 @@ function run_playbook () {
 
 
 function setup () {
-	raspbian_version=$1
+	raspbian_version="${1:-$default_debian_version}"
 
-	if [ -n "$raspbian_version" ]; then
-		run_playbook setup "raspbian_version=$raspbian_version"
-	else
-		usage
-	fi
+	run_playbook setup "raspbian_version=$raspbian_version"
 }
 
 ### Main
