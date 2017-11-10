@@ -13,15 +13,21 @@
     url: "{{ raspbian_url }}"
     dest: "{{ dl_path }}"
     timeout: 30
-  register: dl_result
-
-#- fail: 
-#    msg: Error while downloading "{{ dl_result.url }}",
-#  when: 
-
+  register: dl_raspbian_res
 
 - name: unzip archive
   unarchive:
-    src: "{{ dl_result.dest }}"
+    src: "{{ dl_raspbian_res.dest }}"
     dest: "{{ vm_path }}"
 
+- name: download qemu kernel
+  get_url: 
+    url: "{{ kernel_url }}"
+    dest: "{{ dl_path }}"
+    timeout: 30
+  register: dl_kernel_res
+
+- name: copy qemu kernel to VM path
+  copy: 
+    src: "{{ dl_kernel_res.dest }}"
+    dest: "{{ vm_path }}"
