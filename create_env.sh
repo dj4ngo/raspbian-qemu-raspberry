@@ -1,18 +1,16 @@
 #!/bin/bash -e
 
 dir="$(dirname $(readlink -f $0))"
-raspbian_url="http://downloads.raspberrypi.org/raspbian/images/"
+raspbian_url="http://downloads.raspberrypi.org/raspbian/images"
 tmp_file="$(mktemp)"
-dl_path="/vM_pool/raspbian-rpi-qemu/dl"
-vm_path="/vM_pool/raspbian-rpi-qemu"
+dl_path="/VM_pool/raspbian-rpi-qemu/dl"
+vm_path="/VM_pool/raspbian-rpi-qemu"
 default_debian_version="raspbian-2017-09-08"
 
 # remove file on exit
 trap "{ rm -f $tmp_file; }" EXIT 
 
 
-# debug mode for ansible playbook
-grep -q -- "-v[v]*\>" <<< "${@}" && DEBUG="$1" && echo DEBUG
 
 
 function usage () {
@@ -27,14 +25,14 @@ EOF
 
 function get_raspbian_versions () {
 
-	curl -s $raspbian_url -o /dev/shm/tmp.html
-	echo "cat //html/body/table/tr/td/a/text()" | xmllint --html --shell /dev/shm/tmp.html | sed -n 's/\(.*raspbian.*\)\/$/\1/p'
+	curl -s $raspbian_url/ -o $tmp_file
+	echo "cat //html/body/table/tr/td/a/text()" | xmllint --html --shell $tmp_file | sed -n 's/\(.*raspbian.*\)\/$/\1/p'
 }
 
 
 function run_playbook () {
 	playbook="$1"
-	extra_vars="dl_path=$dlpath vm_path=$vm_path $2"
+	extra_vars="dl_path=$dl_path vm_path=$vm_path $2"
 	set -x
 	sudo ansible-playbook -i "$dir/ansible/inventory" --extra-vars "$extra_vars" "$dir/ansible/${playbook}.yml" $DEBUG
 	set +x
@@ -43,8 +41,10 @@ function run_playbook () {
 
 function setup () {
 	raspbian_version="${1:-$default_debian_version}"
-
-	run_playbook setup "raspbian_version=$raspbian_version"
+	curl -s $raspbian_url/$raspbian_version/ -o $tmp_file
+	zip_file="$(echo 'cat //html/body/table/tr/td/a/text()' | xmllint --html --shell $tmp_file | sed -n '/\.zip$/{p;q}')"
+	raspbian_url="$raspbian_url/$raspbian_version/$zip_file"
+	run_playbook setup "raspbian_url=$raspbian_url"
 }
 
 ### Main
